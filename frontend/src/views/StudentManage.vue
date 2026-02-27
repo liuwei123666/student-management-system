@@ -57,17 +57,13 @@
       </el-table>
 
       <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div>
+      <Pagination
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </el-card>
 
     <!-- 新增/编辑学生对话框 -->
@@ -126,6 +122,8 @@ import { ref, onMounted, reactive, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Plus, Edit, Delete } from '@element-plus/icons-vue'
+import { studentAPI } from '../api/index.js'
+import Pagination from '../components/Pagination.vue'
 
 // 获取路由信息
 const route = useRoute()
@@ -186,19 +184,18 @@ const loadStudents = async () => {
   loading.value = true
   try {
     // 构建查询参数
-    const params = new URLSearchParams()
-    params.append('page', currentPage.value)
-    params.append('pageSize', pageSize.value)
-    params.append('search', searchQuery.value)
+    const params = {
+      page: currentPage.value,
+      pageSize: pageSize.value,
+      search: searchQuery.value
+    }
     
     // 检查是否需要过滤重点关注学生
     if (route.meta.focusOnly) {
-      params.append('focusOnly', 'true')
+      params.focusOnly = 'true'
     }
     
-    const response = await fetch(`http://localhost:8080/api/students?${params.toString()}`)
-    if (!response.ok) throw new Error('Failed to load students')
-    const data = await response.json()
+    const data = await studentAPI.getStudents(params)
     students.value = data.data
     total.value = data.total
   } catch (error) {
@@ -237,28 +234,13 @@ const saveStudent = async () => {
     if (!valid) return
     
     try {
-      let response
       if (form.ID) {
         // 编辑学生
-        response = await fetch(`http://localhost:8080/api/students/${form.ID}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(form)
-        })
+        await studentAPI.updateStudent(form.ID, form)
       } else {
         // 新增学生
-        response = await fetch('http://localhost:8080/api/students', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(form)
-        })
+        await studentAPI.createStudent(form)
       }
-      
-      if (!response.ok) throw new Error('Failed to save student')
       
       ElMessage.success(form.ID ? '学生信息更新成功' : '学生添加成功')
       dialogVisible.value = false
@@ -275,11 +257,7 @@ const deleteStudent = async (row) => {
   if (!row.ID) return
   
   try {
-    const response = await fetch(`http://localhost:8080/api/students/${row.ID}`, {
-      method: 'DELETE'
-    })
-    
-    if (!response.ok) throw new Error('Failed to delete student')
+    await studentAPI.deleteStudent(row.ID)
     
     ElMessage.success('学生删除成功')
     loadStudents()
@@ -328,11 +306,7 @@ onMounted(() => {
   align-items: center;
 }
 
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
+
 
 .dialog-footer {
   display: flex;

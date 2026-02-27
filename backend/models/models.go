@@ -10,14 +10,14 @@ import (
 type Student struct {
 	gorm.Model
 	StudentID string `gorm:"type:varchar(20);uniqueIndex;comment:学号" json:"StudentID"`
-	Name      string `gorm:"type:varchar(50);comment:姓名" json:"Name"`
+	Name      string `gorm:"type:varchar(50);index;comment:姓名" json:"Name"`
 	Gender    string `gorm:"type:varchar(10);comment:性别" json:"Gender"`
-	College   string `gorm:"type:varchar(100);comment:学院" json:"College"`
-	Major     string `gorm:"type:varchar(100);comment:专业" json:"Major"`
-	Grade     string `gorm:"type:varchar(20);comment:年级" json:"Grade"`
-	Class     string `gorm:"type:varchar(50);comment:班级" json:"Class"`
+	College   string `gorm:"type:varchar(100);index;comment:学院" json:"College"`
+	Major     string `gorm:"type:varchar(100);index;comment:专业" json:"Major"`
+	Grade     string `gorm:"type:varchar(20);index;comment:年级" json:"Grade"`
+	Class     string `gorm:"type:varchar(50);index;comment:班级" json:"Class"`
 	Phone     string `gorm:"type:varchar(20);comment:联系电话" json:"Phone"`
-	IsFocus   bool   `gorm:"comment:重点关注状态" json:"IsFocus"`
+	IsFocus   bool   `gorm:"index;comment:重点关注状态" json:"IsFocus"`
 	Avatar    string `gorm:"type:varchar(255);comment:头像URL" json:"Avatar"`
 }
 
@@ -25,29 +25,29 @@ type Student struct {
 type Score struct {
 	gorm.Model
 	StudentID  string  `gorm:"type:varchar(20);index;comment:关联学生学号" json:"student_id"`
-	CourseName string  `gorm:"type:varchar(100);comment:课程名称" json:"course_name"`
+	CourseName string  `gorm:"type:varchar(100);index;comment:课程名称" json:"course_name"`
 	Credit     float64 `gorm:"type:float;comment:学分" json:"credit"`
-	Mark       float64 `gorm:"type:float;comment:分数" json:"mark"`
-	Term       string  `gorm:"type:varchar(20);comment:学期" json:"term"`
-	IsFailed   bool    `gorm:"comment:是否挂科" json:"is_failed"`
+	Mark       float64 `gorm:"type:float;index;comment:分数" json:"mark"`
+	Term       string  `gorm:"type:varchar(20);index;comment:学期" json:"term"`
+	IsFailed   bool    `gorm:"index;comment:是否挂科" json:"is_failed"`
 }
 
 // Honor 荣誉表
 type Honor struct {
 	gorm.Model
 	StudentID  string    `gorm:"type:varchar(20);index;comment:关联学生" json:"student_id"`
-	Title      string    `gorm:"type:varchar(100);comment:荣誉名称" json:"title"`
-	Level      string    `gorm:"type:varchar(20);comment:级别" json:"level"`
-	AwardDate  time.Time `gorm:"comment:获奖时间" json:"award_date"`
+	Title      string    `gorm:"type:varchar(100);index;comment:荣誉名称" json:"title"`
+	Level      string    `gorm:"type:varchar(20);index;comment:级别" json:"level"`
+	AwardDate  time.Time `gorm:"index;comment:获奖时间" json:"award_date"`
 }
 
 // Attendance 安全考勤表
 type Attendance struct {
 	gorm.Model
 	StudentID   string    `gorm:"type:varchar(20);index;comment:关联学生" json:"student_id"`
-	Date        time.Time `gorm:"comment:考勤日期" json:"date"`
-	Status      string    `gorm:"type:varchar(20);comment:状态" json:"status"`
-	Location    string    `gorm:"type:varchar(100);comment:打卡位置/宿舍号" json:"location"`
+	Date        time.Time `gorm:"index;comment:考勤日期" json:"date"`
+	Status      string    `gorm:"type:varchar(20);index;comment:状态" json:"status"`
+	Location    string    `gorm:"type:varchar(100);index;comment:打卡位置/宿舍号" json:"location"`
 	Description string    `gorm:"type:text;comment:备注说明" json:"description"`
 }
 
@@ -55,10 +55,10 @@ type Attendance struct {
 type CompetitionActivity struct {
 	gorm.Model
 	StudentID string    `gorm:"type:varchar(20);index;comment:关联学生" json:"student_id"`
-	Type      string    `gorm:"type:varchar(20);comment:类型" json:"type"`
-	Name      string    `gorm:"type:varchar(100);comment:赛事/活动名称" json:"name"`
+	Type      string    `gorm:"type:varchar(20);index;comment:类型" json:"type"`
+	Name      string    `gorm:"type:varchar(100);index;comment:赛事/活动名称" json:"name"`
 	Role      string    `gorm:"type:varchar(50);comment:担任角色/参赛身份" json:"role"`
-	Date      time.Time `gorm:"comment:参与时间" json:"date"`
+	Date      time.Time `gorm:"index;comment:参与时间" json:"date"`
 	Award     string    `gorm:"type:varchar(100);comment:获奖情况/活动时长" json:"award"`
 }
 
@@ -66,8 +66,8 @@ type CompetitionActivity struct {
 type Employment struct {
 	gorm.Model
 	StudentID string `gorm:"type:varchar(20);index;comment:关联学生" json:"student_id"`
-	Status    string `gorm:"type:varchar(20);comment:就业状态" json:"status"`
-	Company   string `gorm:"type:varchar(100);comment:签约公司/实习单位" json:"company"`
+	Status    string `gorm:"type:varchar(20);index;comment:就业状态" json:"status"`
+	Company   string `gorm:"type:varchar(100);index;comment:签约公司/实习单位" json:"company"`
 	Position  string `gorm:"type:varchar(100);comment:岗位" json:"position"`
 }
 
@@ -75,8 +75,8 @@ type Employment struct {
 type MentalHealth struct {
 	gorm.Model
 	StudentID       string    `gorm:"type:varchar(20);index;comment:关联学生" json:"student_id"`
-	AssessmentDate  time.Time `gorm:"comment:评估日期" json:"assessment_date"`
-	Level           string    `gorm:"type:varchar(20);comment:心理评级" json:"level"`
+	AssessmentDate  time.Time `gorm:"index;comment:评估日期" json:"assessment_date"`
+	Level           string    `gorm:"type:varchar(20);index;comment:心理评级" json:"level"`
 	Counselor       string    `gorm:"type:varchar(50);comment:负责辅导员/心理老师" json:"counselor"`
 	Notes           string    `gorm:"type:text;comment:备注" json:"notes"`
 }
@@ -85,19 +85,19 @@ type MentalHealth struct {
 type Warning struct {
 	gorm.Model
 	StudentID   string `gorm:"type:varchar(20);index;comment:关联学生" json:"student_id"`
-	WarningType string `gorm:"type:varchar(20);comment:预警类型" json:"warning_type"`
-	Level       string `gorm:"type:varchar(10);comment:预警等级" json:"level"`
+	WarningType string `gorm:"type:varchar(20);index;comment:预警类型" json:"warning_type"`
+	Level       string `gorm:"type:varchar(10);index;comment:预警等级" json:"level"`
 	Description string `gorm:"type:text;comment:预警详细原因说明" json:"description"`
-	Status      string `gorm:"type:varchar(20);comment:处理状态" json:"status"`
+	Status      string `gorm:"type:varchar(20);index;comment:处理状态" json:"status"`
 }
 
 // ServiceMessage 服务推送表
 type ServiceMessage struct {
 	gorm.Model
 	StudentID string `gorm:"type:varchar(20);index;comment:接收方学号" json:"student_id"`
-	Title     string `gorm:"type:varchar(100);comment:推送标题" json:"title"`
+	Title     string `gorm:"type:varchar(100);index;comment:推送标题" json:"title"`
 	Content   string `gorm:"type:text;comment:推送内容" json:"content"`
-	IsRead    bool   `gorm:"comment:是否已读" json:"is_read"`
+	IsRead    bool   `gorm:"index;comment:是否已读" json:"is_read"`
 }
 
 // TreeHole 树洞表

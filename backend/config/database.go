@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
@@ -15,11 +16,16 @@ var DB *gorm.DB
 
 // InitDB 初始化数据库连接
 func InitDB() error {
+	// 加载.env文件
+	if err := godotenv.Load(); err != nil {
+		fmt.Println("Warning: .env file not found, using default values")
+	}
+
 	// 从环境变量获取数据库连接信息
 	host := getEnv("DB_HOST", "localhost")
 	port := getEnv("DB_PORT", "3306")
-	user := getEnv("DB_USER", "student_sys") // 使用新创建的用户
-	password := getEnv("DB_PASSWORD", "student_sys") // 使用新创建的密码
+	user := getEnv("DB_USER", "student_sys")
+	password := getEnv("DB_PASSWORD", "student_sys")
 	dbname := getEnv("DB_NAME", "student_system")
 
 	// 构建 DSN (Data Source Name)
@@ -51,6 +57,7 @@ func AutoMigrate() error {
 		&models.Warning{},
 		&models.ServiceMessage{},
 		&models.TreeHole{},
+		&models.User{},
 	)
 	if err != nil {
 		return fmt.Errorf("failed to auto migrate: %w", err)
