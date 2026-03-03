@@ -61,8 +61,7 @@ func GetWarnings(c *gin.Context) {
 
 	// 执行分页查询，按创建时间倒序
 	query.Order("created_at DESC").Limit(pageSize).Find(&warnings)
-
-	c.JSON(200, gin.H{
+	c.JSON(200, gin.H{		
 		"data":  warnings,
 		"total": total,
 		"page":  page,

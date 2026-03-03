@@ -5,12 +5,10 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 
 	"student-sys/config"
 	"student-sys/controllers"
 	"student-sys/middleware"
-	"student-sys/models"
 )
 
 // CORS 中间件
@@ -68,28 +66,9 @@ func main() {
 		log.Fatalf("Failed to auto migrate database: %v", err)
 	}
 
-	// 初始化默认教师账号
-	var teacherCount int64
-	config.DB.Model(&models.User{}).Where("role = ?", "teacher").Count(&teacherCount)
-	if teacherCount == 0 {
-		// 加密密码
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte("123456"), bcrypt.DefaultCost)
-		if err != nil {
-			log.Fatalf("Failed to hash password: %v", err)
-		}
-
-		// 创建默认教师账号
-		teacher := models.User{
-			Phone:    "admin",
-			Password: string(hashedPassword),
-			Role:     "teacher",
-		}
-
-		if err := config.DB.Create(&teacher).Error; err != nil {
-			log.Fatalf("Failed to create default teacher: %v", err)
-		}
-
-		fmt.Println("默认教师账号已创建")
+	// 初始化种子数据
+	if err := config.SeedData(); err != nil {
+		log.Fatalf("Failed to seed data: %v", err)
 	}
 
 	// 初始化 Gin 引擎
