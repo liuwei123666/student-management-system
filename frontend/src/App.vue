@@ -1,5 +1,10 @@
 <template>
-  <div class="app-container">
+  <!-- 登录页面 -->
+  <div v-if="isLoginPage">
+    <router-view />
+  </div>
+  <!-- 主应用布局 -->
+  <div v-else class="app-container">
     <!-- 侧边栏 -->
     <el-aside :width="isSidebarCollapsed ? '64px' : '200px'" class="sidebar" :class="{ collapsed: isSidebarCollapsed }">
       <div class="logo">
@@ -74,6 +79,7 @@
         </div>
         <div class="header-right">
           <span>欢迎，管理员</span>
+          <el-button type="text" @click="handleLogout" style="margin-left: 20px;">退出登录</el-button>
         </div>
       </el-header>
 
@@ -87,18 +93,37 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import { useUserStore } from './store/user'
 import { House, User, Document, Menu, Timer, Trophy, Briefcase, Warning, Message, Star, DataAnalysis, Avatar, ChatLineRound } from '@element-plus/icons-vue'
 
 const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
 const isSidebarCollapsed = ref(false)
 
 const activeMenu = computed(() => {
   return route.path
 })
 
+// 判断是否是登录页面或学生端页面
+const isLoginPage = computed(() => {
+  return route.path === '/login' || route.path === '/student'
+})
+
 const toggleSidebar = () => {
   isSidebarCollapsed.value = !isSidebarCollapsed.value
+}
+
+// 处理退出登录
+const handleLogout = () => {
+  // 清除用户状态
+  userStore.logout()
+  // 提示退出成功
+  ElMessage.success('退出成功')
+  // 跳转到登录页
+  router.push('/login')
 }
 
 // 响应式处理

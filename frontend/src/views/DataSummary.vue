@@ -48,7 +48,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { dataSummaryAPI } from '../api/index'
 
 const summary = ref(null)
 const loading = ref(false)
@@ -121,11 +121,11 @@ const loadData = async () => {
   error.value = ''
   
   try {
-    const response = await axios.get('http://localhost:8080/api/data-summary')
-    summary.value = response.data
+    const response = await dataSummaryAPI.getDataSummary()
+    summary.value = response
     updateCharts()
   } catch (err) {
-    error.value = err.response?.data?.error || '数据加载失败'
+    error.value = err.message || '数据加载失败'
   } finally {
     loading.value = false
   }

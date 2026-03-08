@@ -69,7 +69,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { treeholeAPI } from '../api/index'
 
 const posts = ref([])
 const loading = ref(false)
@@ -84,10 +84,10 @@ const loadPosts = async () => {
   error.value = ''
   
   try {
-    const response = await axios.get('http://localhost:8080/api/treehole')
-    posts.value = response.data
+    const response = await treeholeAPI.getTreeHolePosts()
+    posts.value = response
   } catch (err) {
-    error.value = err.response?.data?.error || '加载失败'
+    error.value = err.message || '加载失败'
   } finally {
     loading.value = false
   }
@@ -102,15 +102,15 @@ const publishPost = async () => {
   publishing.value = true
   
   try {
-    const response = await axios.post('http://localhost:8080/api/treehole', {
+    const response = await treeholeAPI.createTreeHolePost({
       content: newPost.value.content
     })
     // 将新帖子添加到列表顶部
-    posts.value.unshift(response.data)
+    posts.value.unshift(response)
     // 清空输入框
     newPost.value.content = ''
   } catch (err) {
-    error.value = err.response?.data?.error || '发布失败'
+    error.value = err.message || '发布失败'
   } finally {
     publishing.value = false
   }
@@ -121,14 +121,14 @@ const likePost = async (postId) => {
   likingPosts.value.push(postId)
   
   try {
-    const response = await axios.post(`http://localhost:8080/api/treehole/${postId}/like`)
+    const response = await treeholeAPI.likeTreeHolePost(postId)
     // 更新帖子点赞数
     const index = posts.value.findIndex(post => post.id === postId)
     if (index !== -1) {
-      posts.value[index] = response.data
+      posts.value[index] = response
     }
   } catch (err) {
-    error.value = err.response?.data?.error || '点赞失败'
+    error.value = err.message || '点赞失败'
   } finally {
     likingPosts.value = likingPosts.value.filter(id => id !== postId)
   }
